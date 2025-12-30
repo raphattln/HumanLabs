@@ -1,26 +1,202 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Default (Light) */
+  --background: #FCFAF7;
+  --foreground: #1A1A1A;
+  --accent: #EE6C4D;
+  --accent-foreground: #FFFFFF;
+  --muted: #F3F1ED;
+  --muted-foreground: #6B6B6B;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --border: #E5E1DB;
+  --ring: #EE6C4D;
 }
 
-@theme inline {
+:root.theme-light {
+  --background: #FCFAF7;
+  --foreground: #1A1A1A;
+  --accent: #EE6C4D;
+  --accent-foreground: #FFFFFF;
+  --muted: #F3F1ED;
+  --muted-foreground: #6B6B6B;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --border: #E5E1DB;
+  --ring: #EE6C4D;
+}
+
+:root.theme-dark {
+  --background: #0f1115;
+  --foreground: #f1f1f1;
+  --accent: #EE6C4D;
+  /* Keeping accent consistent for brand identity, can tweak */
+  --accent-foreground: #FFFFFF;
+  --muted: #1a1d24;
+  --muted-foreground: #a1a1aa;
+  --card: #15171c;
+  /* Slightly lighter than bg */
+  --card-foreground: #f1f1f1;
+  --border: #2e323b;
+  --ring: #EE6C4D;
+}
+
+:root.theme-cream {
+  --background: #fbf4ea;
+  --foreground: #2b2b2b;
+  --accent: #d97757;
+  /* Slightly earthier accent */
+  --accent-foreground: #FFFFFF;
+  --muted: #f1e7d8;
+  --muted-foreground: #7c7267;
+  --card: #ffffff;
+  --card-foreground: #2b2b2b;
+  --border: #e6dac6;
+  --ring: #d97757;
+}
+
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-outfit);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Smooth transition for theme switch */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
+}
+
+.shadow-soft {
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.04), 0 2px 8px -2px rgba(0, 0, 0, 0.02);
+}
+
+/* Playful Animations */
+@keyframes breathe {
+
+  0%,
+  100% {
+    transform: scale(1) translateY(0);
+  }
+
+  50% {
+    transform: scale(1.02) translateY(-4px);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes wiggle {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-1deg);
+  }
+
+  75% {
+    transform: rotate(1deg);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-wiggle:hover {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* Micro-interactions */
+.interact-lift {
+  transition: transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 150ms ease;
+}
+
+.interact-lift:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+}
+
+.interact-lift:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.interact-rotate {
+  transition: transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.interact-rotate:hover {
+  transform: rotate(2deg) scale(1.02);
+}
+
+.interact-scale {
+  transition: transform 100ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.interact-scale:hover {
+  transform: scale(1.05);
+}
+
+.interact-scale:active {
+  transform: scale(0.97);
 }

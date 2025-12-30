@@ -1,0 +1,254 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum ScoreDirection {
+  HIGHER_BETTER
+  LOWER_BETTER
+}
+
+enum SubscriptionStatus {
+  active
+  trialing
+  past_due
+  canceled
+  incomplete
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  passwordHash  String?
+  emailVerified DateTime? // null = not verified, set to now() on verification
+  
+  // Profile
+  username      String?   @unique
+  displayName   String?
+  avatar        Json?     // { pack: "brain" | "emoji" | "abstract", id: "brain_03" }
+  avatarEmoji   String?   // New field for custom emoji avatar
+  image         String?   // OAuth provider image
+  timezone      String    @default("UTC") // IANA timezone (e.g., "Europe/Paris")
+  theme         String    @default("light") // "light" | "dark" | "cream"
+  
+  // Progress tracking (DEPRECATED - moved to UserStats)
+  currentStreak Int       @default(0)
+  longestStreak Int       @default(0)
+  lastPlayedAt  DateTime?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  results       Result[]
+  preferences   Preferences?
+  accounts      Account[]
+  sessions      Session[]
+  verificationTokens EmailVerificationToken[]
+  resetTokens   PasswordResetToken[]
+  badges        UserBadge[]
+  dailyAggregates DailyAggregate[]
+  stats           UserStats?
+  subscription    Subscription?
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique  // HASHED token (never store plain)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique  // HASHED token (never store plain)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+}
+
+model Preferences {
+  id             String  @id @default(cuid())
+  userId         String  @unique
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reducedMotion  Boolean @default(false)
+  highContrast   Boolean @default(false)
+  largeText      Boolean @default(false)
+}
+
+model Result {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameSlug   String
+  score      Float
+  durationMs Int?     // Duration of the game in milliseconds
+  metadata   Json     // For game-specific data like "reaction_times": [120, 150]
+  deviceInfo Json?
+  createdAt  DateTime @default(now())
+
+  @@index([gameSlug, score])
+  @@index([userId, gameSlug])
+  @@index([userId, createdAt])
+  @@index([userId, gameSlug, createdAt])
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  code        String   @unique  // e.g., "first_game", "streak_7"
+  name        String              // "First Steps"
+  description String              // "Played your first game"
+  icon        String              // emoji or icon identifier
+  category    String              // "milestone", "consistency", "exploration"
+  createdAt   DateTime @default(now())
+  userBadges  UserBadge[]
+  
+  @@index([category])
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId   String
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt  DateTime @default(now())
+  
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([userId, badgeId])
+}
+
+
+model PopulationAggregate {
+  id        String   @id @default(cuid())
+  gameId    String
+  date      String // YYYY-MM-DD
+  plays     Int      @default(0)
+  mean      Float    @default(0)
+  p50       Float    @default(0)
+  p25       Float    @default(0)
+  p75       Float    @default(0)
+  min       Float    @default(0)
+  max       Float    @default(0)
+  updatedAt DateTime @updatedAt
+  game      Game     @relation(fields: [gameId], references: [id])
+
+  @@unique([gameId, date])
+}
+
+model Game {
+
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  name            String
+  description     String?
+  scoreDirection  ScoreDirection
+  scoreUnit       String?         // "ms", "level", "wpm", etc.
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  dailyAggregates DailyAggregate[]
+  populationAggregates PopulationAggregate[]
+  
+  @@index([slug])
+  @@index([isActive])
+}
+
+model DailyAggregate {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  dayKey    String   // Format: "YYYY-MM-DD" in user's timezone
+  bestScore Float
+  attempts  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, gameId, dayKey])
+  @@index([userId, gameId])
+  @@index([gameId, dayKey])
+}
+
+model UserStats {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastPlayedDate  String?  // "YYYY-MM-DD" in user's timezone
+  totalSessions   Int      @default(0)
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+model Subscription {
+  id                     String             @id @default(cuid())
+  userId                 String             @unique
+  user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                   String             // "pro_monthly", "pro_yearly"
+  status                 SubscriptionStatus @default(incomplete)
+  currentPeriodEnd       DateTime
+  cancelAtPeriodEnd      Boolean            @default(false)
+  providerCustomerId     String?            // Stripe customer ID (optional)
+  providerSubscriptionId String?            // Stripe subscription ID (optional)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
