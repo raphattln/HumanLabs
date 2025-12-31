@@ -13,6 +13,11 @@ interface GameLayoutProps {
     children: React.ReactNode;
     onReset?: () => void;
     gameStatus: "idle" | "playing" | "result";
+    shareData?: {
+        title: string;
+        text: string;
+        url: string;
+    };
 }
 
 export function GameLayout({
@@ -23,7 +28,27 @@ export function GameLayout({
     children,
     onReset,
     gameStatus,
+    shareData,
 }: GameLayoutProps) {
+    const handleShare = async () => {
+        if (!shareData) return;
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                await navigator.clipboard.writeText(
+                    `${shareData.text} ${shareData.url}`
+                );
+                // Simple alert fallback if no toast system is visible in this file context,
+                // but ideally we'd use a toast. For now, alert is safe feedback.
+                alert("Result copied to clipboard!");
+            }
+        } catch (err) {
+            console.error("Error sharing:", err);
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-12 max-w-6xl">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -56,7 +81,7 @@ export function GameLayout({
                                 <RotateCcw className="w-4 h-4" />
                                 Play Again
                             </Button>
-                            <Button variant="outline" className="w-full gap-2">
+                            <Button variant="outline" onClick={handleShare} className="w-full gap-2">
                                 <Share2 className="w-4 h-4" />
                                 Share Result
                             </Button>

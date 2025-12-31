@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Twitter, Instagram } from "lucide-react";
 
 export function Footer() {
     return (
@@ -15,6 +16,16 @@ export function Footer() {
                         <p className="text-sm text-muted-foreground">
                             Original benchmarks for the modern mind.
                         </p>
+                        <div className="flex gap-4">
+                            <Link href="https://twitter.com/cosmoprono" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
+                                <Twitter className="h-5 w-5" />
+                                <span className="sr-only">Twitter</span>
+                            </Link>
+                            <Link href="https://instagram.com/humanlabs.official" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
+                                <Instagram className="h-5 w-5" />
+                                <span className="sr-only">Instagram</span>
+                            </Link>
+                        </div>
                     </div>
 
                     <div>

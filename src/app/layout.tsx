@@ -16,8 +16,33 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "HumanLabs | Cognitive Performance Benchmarks",
-  description: "Measure and improve your reaction time, memory, and cognitive skills with clean, accessible benchmarks.",
+  title: "Human Benchmark | Cognitive Performance Benchmarks",
+  description:
+    "Measure and improve your reaction time, memory, and cognitive skills with clean, accessible benchmarks.",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://humanbenchmark.com",
+    title: "Human Benchmark",
+    description:
+      "Measure and improve your reaction time, memory, and cognitive skills with clean, accessible benchmarks.",
+    siteName: "Human Benchmark",
+    images: [
+      {
+        url: "https://humanbenchmark.com/og-image.png", // We might need to generate this or use a placeholder
+        width: 1200,
+        height: 630,
+        alt: "Human Benchmark",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Human Benchmark",
+    description:
+      "Measure and improve your reaction time, memory, and cognitive skills with clean, accessible benchmarks.",
+    // images: ['https://humanbenchmark.com/og-image.png'],
+  },
 };
 
 import { AuthProvider } from "@/components/auth-provider";

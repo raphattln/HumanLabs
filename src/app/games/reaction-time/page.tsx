@@ -74,6 +74,15 @@ export default function ReactionTimePage() {
             icon={Zap}
             gameStatus={state === "result" ? "result" : "playing"}
             onReset={startTest}
+            shareData={
+                result
+                    ? {
+                        title: "My Reaction Time",
+                        text: `⚡️ My Reaction Time is ${result}ms! Can you beat me? #HumanBenchmark`,
+                        url: "https://humanbenchmark.com",
+                    }
+                    : undefined
+            }
         >
             <div
                 onClick={handleClick}

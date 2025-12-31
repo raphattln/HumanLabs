@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
-import { User, Activity, Info, CreditCard, Menu, X } from "lucide-react";
+import { User, Activity, Info, CreditCard, Menu, X, Twitter, Instagram } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
@@ -57,6 +57,17 @@ export function Navbar() {
                 <div className="flex items-center gap-4">
                     {/* Desktop Auth */}
                     <div className="hidden md:flex items-center gap-4">
+                        {/* Social Icons */}
+                        <div className="flex items-center gap-2 mr-2">
+                            <Link href="https://twitter.com/cosmoprono" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
+                                <Twitter className="h-5 w-5" />
+                                <span className="sr-only">Twitter</span>
+                            </Link>
+                            <Link href="https://instagram.com/humanlabs.official" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
+                                <Instagram className="h-5 w-5" />
+                                <span className="sr-only">Instagram</span>
+                            </Link>
+                        </div>
                         {status === "loading" ? (
                             <div className="h-8 w-24 animate-pulse bg-muted rounded-lg" />
                         ) : session ? (
