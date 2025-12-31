@@ -59,7 +59,7 @@ export function Navbar() {
                     <div className="hidden md:flex items-center gap-4">
                         {/* Social Icons */}
                         <div className="flex items-center gap-2 mr-2">
-                            <Link href="https://twitter.com/cosmoprono" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
+                            <Link href="https://x.com/cosmospron" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
                                 <Twitter className="h-5 w-5" />
                                 <span className="sr-only">Twitter</span>
                             </Link>

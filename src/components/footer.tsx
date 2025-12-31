@@ -17,7 +17,7 @@ export function Footer() {
                             Original benchmarks for the modern mind.
                         </p>
                         <div className="flex gap-4">
-                            <Link href="https://twitter.com/cosmoprono" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
+                            <Link href="https://x.com/cosmospron" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
                                 <Twitter className="h-5 w-5" />
                                 <span className="sr-only">Twitter</span>
                             </Link>
