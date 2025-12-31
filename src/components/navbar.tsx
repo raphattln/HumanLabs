@@ -19,18 +19,6 @@ export function Navbar() {
     const { data: session, status } = useSession();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    // Lock body scroll when mobile menu is open
-    useEffect(() => {
-        if (isMobileMenuOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "unset";
-        }
-        return () => {
-            document.body.style.overflow = "unset";
-        };
-    }, [isMobileMenuOpen]);
-
     // Close menu when route changes
     useEffect(() => {
         setIsMobileMenuOpen(false);
@@ -99,8 +87,8 @@ export function Navbar() {
                     {/* Mobile Menu Toggle */}
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="md:hidden"
+                        className="md:hidden px-2 h-10 w-10 min-w-0 flex items-center justify-center mobile-menu-btn"
+                        size="sm"
                         onClick={() => setIsMobileMenuOpen(true)}
                         aria-label="Open menu"
                         aria-expanded={isMobileMenuOpen}
@@ -130,7 +118,8 @@ export function Navbar() {
                             <span className="font-heading font-bold text-lg">Menu</span>
                             <Button
                                 variant="ghost"
-                                size="icon"
+                                size="sm"
+                                className="px-2 h-10 w-10 min-w-0 flex items-center justify-center mobile-close-btn"
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 aria-label="Close menu"
                             >
