@@ -155,70 +155,82 @@ export default function StatsPage() {
                     {[...Array(11)].map((_, i) => <SkeletonCard key={i} />)}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {summary.map((stat) => {
-                        // Match icons from our local map if possible, or fallback
-                        const localGame = games.find(g => g.slug === stat.gameSlug);
-                        const Icon = localGame?.icon || Zap;
-                        const color = localGame?.color || "text-gray-500";
-                        const hasPlayed = stat.plays > 0;
+                <>
+                    {summary.length === 0 ? (
+                        <div className="text-center py-12 bg-muted/30 rounded-lg border border-dashed border-border">
+                            <h3 className="text-xl font-bold mb-2">No Stats Recorded Yet</h3>
+                            <p className="text-muted-foreground mb-6">Play your first game to see your performance metrics here.</p>
+                            <Link href="/games">
+                                <Button>Go to Games</Button>
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {summary.map((stat) => {
+                                // Match icons from our local map if possible, or fallback
+                                const localGame = games.find(g => g.slug === stat.gameSlug);
+                                const Icon = localGame?.icon || Zap;
+                                const color = localGame?.color || "text-gray-500";
+                                const hasPlayed = stat.plays > 0;
 
-                        return (
-                            <Card key={stat.gameSlug} className="p-6 flex flex-col hover:shadow-lg transition-shadow">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className={`p-2 rounded-lg bg-accent/5 ${color}`}>
-                                        <Icon className="w-6 h-6" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="font-bold">{stat.name}</div>
-                                        {hasPlayed ? (
-                                            <>
-                                                <div className="text-xs text-muted-foreground">
-                                                    Best: <span className="text-foreground font-medium">{stat.best}</span> {stat.unit}
-                                                </div>
-                                                <div className="text-xs text-muted-foreground mt-1">
-                                                    Played {stat.plays} {stat.plays === 1 ? 'time' : 'times'}
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div className="text-xs text-muted-foreground">
-                                                    Best: <span className="text-foreground font-medium">—</span>
-                                                </div>
-                                                <div className="text-xs text-muted-foreground mt-1">
-                                                    Not played yet
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
+                                return (
+                                    <Card key={stat.gameSlug} className="p-6 flex flex-col hover:shadow-lg transition-shadow">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className={`p-2 rounded-lg bg-accent/5 ${color}`}>
+                                                <Icon className="w-6 h-6" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="font-bold">{stat.name}</div>
+                                                {hasPlayed ? (
+                                                    <>
+                                                        <div className="text-xs text-muted-foreground">
+                                                            Best: <span className="text-foreground font-medium">{stat.best}</span> {stat.unit}
+                                                        </div>
+                                                        <div className="text-xs text-muted-foreground mt-1">
+                                                            Played {stat.plays} {stat.plays === 1 ? 'time' : 'times'}
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="text-xs text-muted-foreground">
+                                                            Best: <span className="text-foreground font-medium">—</span>
+                                                        </div>
+                                                        <div className="text-xs text-muted-foreground mt-1">
+                                                            Not played yet
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
 
-                                <div className="flex-grow flex items-end">
-                                    {hasPlayed && stat.recentScores && stat.recentScores.length >= 2 ? (
-                                        <Sparkline
-                                            data={stat.recentScores}
-                                            color={color}
-                                            higherIsBetter={stat.higherIsBetter}
-                                        />
-                                    ) : hasPlayed ? (
-                                        <div className="h-24 flex items-center justify-center text-xs text-muted-foreground">
-                                            Not enough data for chart
+                                        <div className="flex-grow flex items-end">
+                                            {hasPlayed && stat.recentScores && stat.recentScores.length >= 2 ? (
+                                                <Sparkline
+                                                    data={stat.recentScores}
+                                                    color={color}
+                                                    higherIsBetter={stat.higherIsBetter}
+                                                />
+                                            ) : hasPlayed ? (
+                                                <div className="h-24 flex items-center justify-center text-xs text-muted-foreground">
+                                                    Not enough data for chart
+                                                </div>
+                                            ) : (
+                                                <div className="h-24 flex items-center justify-center">
+                                                    <Link href={`/games/${stat.gameSlug}`}>
+                                                        <Button variant="outline" size="sm" className="gap-2">
+                                                            Play now
+                                                            <ArrowRight className="w-4 h-4" />
+                                                        </Button>
+                                                    </Link>
+                                                </div>
+                                            )}
                                         </div>
-                                    ) : (
-                                        <div className="h-24 flex items-center justify-center">
-                                            <Link href={`/games/${stat.gameSlug}`}>
-                                                <Button variant="outline" size="sm" className="gap-2">
-                                                    Play now
-                                                    <ArrowRight className="w-4 h-4" />
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    )}
-                                </div>
-                            </Card>
-                        );
-                    })}
-                </div>
+                                    </Card>
+                                );
+                            })}
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

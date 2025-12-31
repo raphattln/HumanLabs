@@ -5,23 +5,38 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { getAllGames, GameConfig } from "@/lib/game-config";
+import { getToken } from "next-auth/jwt";
 
 async function getUserId(req: NextRequest): Promise<string | null> {
-    const session = await getServerSession(authOptions);
-    if (session?.user?.id) return session.user.id;
-    const cookieStore = await cookies();
-    const token = cookieStore.get("auth_token")?.value;
-    if (token) {
-        const dbSession = await prisma.session.findUnique({ where: { sessionToken: token } });
-        return dbSession?.userId || null;
+    // 1. Try getServerSession (standard)
+    try {
+        const session = await getServerSession(authOptions);
+        if (session?.user?.id) {
+            return session.user.id;
+        }
+    } catch (e) {
+        console.warn("getServerSession failed:", e);
     }
+
+    // 2. Try raw JWT token decode (fallback for some environments)
+    try {
+        // getToken expects 'req' to have headers/cookies. NextRequest is compatible.
+        const token = await getToken({ req: req as any, secret: process.env.NEXTAUTH_SECRET });
+        if (token?.id) return token.id as string;
+        if (token?.sub) return token.sub as string;
+    } catch (e) {
+        console.warn("getToken failed:", e);
+    }
+
     return null;
 }
 
 export async function GET(request: NextRequest) {
     const userId = await getUserId(request);
+
     if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        console.error("Unauthorized access attempt to /api/performance/summary - Session not found");
+        return NextResponse.json({ error: "Unauthorized: Please log in again" }, { status: 401 });
     }
 
     try {
