@@ -13,6 +13,7 @@
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-switch": "^1.2.6",
+    "@vercel/analytics": "^1.6.1",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "emoji-picker-react": "^4.16.1",
