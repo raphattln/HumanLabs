@@ -109,8 +109,7 @@ const allGames = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center pt-8">
-      <p className="text-base font-medium text-foreground mb-4">salut clemence</p>
+    <div className="flex flex-col items-center">
       {/* Hero Section */}
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 sm:py-24">
